@@ -3,96 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You </title>
+    <title>I'm Sorry ❤️</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body { 
             height: 100vh; 
+            width: 100vw;
             display: flex; 
+            flex-direction: column;
             align-items: center; 
             justify-content: center; 
-            background: linear-gradient(135deg, #fce4ec 0%, #fee1e8 100%);
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            overflow: hidden; 
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 60px;
-            width: 550px; /* Big, bold card */
-            min-height: 450px;
-            border-radius: 40px;
-            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.5);
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 1;
+            background: #fff0f3; /* Simple soft pink background */
+            font-family: 'Arial', sans-serif; 
+            overflow: hidden; /* Prevents scrollbars when button moves */
         }
 
         h1 { 
-            font-size: 3.5rem; 
+            font-size: clamp(3rem, 15vw, 7rem); 
             color: #ff4d6d; 
-            margin-bottom: 40px;
-            pointer-events: none;
+            margin-bottom: 60px;
+            text-align: center;
+            user-select: none;
         }
 
         .btn-container { 
             display: flex; 
-            gap: 25px; 
+            gap: 40px; 
             justify-content: center; 
             align-items: center;
+            width: 100%;
         }
 
         button {
-            padding: 18px 45px;
-            border-radius: 20px;
+            padding: 20px 50px;
+            border-radius: 50px;
             border: none;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         #yesBtn { 
             background-color: #43aa8b; 
             color: white; 
-            box-shadow: 0 4px 15px rgba(67, 170, 139, 0.3);
-            z-index: 1000;
+            transition: transform 0.3s ease;
+            z-index: 100;
         }
 
         #noBtn { 
             background-color: #ff4d6d; 
             color: white; 
-            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
             position: relative;
-            /* This makes it slide smoothly instead of teleporting */
-            transition: all 0.4s ease-out; 
-            z-index: 999;
+            /* This makes it slide smoothly */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 99;
         }
     </style>
 </head>
 <body>
 
-    <div class="card" id="mainCard">
-        <h1>I AM SORRY</h1>
-        <div class="btn-container">
-            <button id="yesBtn">Alright maybe</button>
-            <button id="noBtn">No</button>
-        </div>
+    <h1 id="heading">I AM SORRY</h1>
+
+    <div class="btn-container">
+        <button id="yesBtn">Alright maybe</button>
+        <button id="noBtn">No</button>
     </div>
 
     <script>
         let noCount = 0;
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const card = document.getElementById('mainCard');
+        const heading = document.getElementById('heading');
 
-        // This makes the button run away when the mouse even gets CLOSE
-        // It makes it much harder to click!
+        // Only moves when "No" is hovered or clicked
         noBtn.addEventListener('mouseover', moveButton);
         noBtn.addEventListener('click', moveButton);
 
@@ -102,16 +87,17 @@
             if (noCount >= 5) {
                 noBtn.style.display = 'none';
             } else {
+                // Switch to fixed so it can slide anywhere on the whole screen
                 noBtn.style.position = 'fixed';
 
-                // Grow the Yes button, shrink the No button
-                const yesScale = 1 + (noCount * 0.6);
-                const noScale = 1 - (noCount * 0.12);
+                // Scale Logic
+                const yesScale = 1 + (noCount * 0.7);
+                const noScale = 1 - (noCount * 0.15);
                 
-                noBtn.style.transform = `scale(${noScale})`;
                 yesBtn.style.transform = `scale(${yesScale})`;
+                noBtn.style.transform = `scale(${noScale})`;
 
-                // Calculate random position
+                // Random Screen Position (keeping it away from the edges)
                 const padding = 100;
                 const x = Math.random() * (window.innerWidth - padding * 2) + padding;
                 const y = Math.random() * (window.innerHeight - padding * 2) + padding;
@@ -122,10 +108,11 @@
         }
 
         yesBtn.addEventListener('click', () => {
-            card.innerHTML = `
-                <h1 style="font-size: 5rem;">❤️</h1>
-                <h2 style="color: #ff4d6d;">Yay!Thank you so much; You are the Best!</h2>
-                <p style="color: #888; margin-top: 15px;">I promise to make it up to you.</p>
+            document.body.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+                    <h1 style="font-size: 8rem;">❤️</h1>
+                    <h2 style="color: #ff4d6d; font-size: 3rem;">I love you!</h2>
+                </div>
             `;
         });
     </script>
