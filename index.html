@@ -13,7 +13,8 @@
             display: flex; 
             flex-direction: column;
             align-items: center; 
-            justify-content: center; 
+            justify-content: flex-start; /* Start from top to give more room */
+            padding-top: 50px;
             background-color: #fff0f3;
             font-family: 'Arial', sans-serif; 
             overflow: hidden; 
@@ -24,26 +25,25 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            z-index: 5; /* Lower than the buttons */
-            pointer-events: none;
+            z-index: 2000; /* Extremely high so text is ALWAYS on top */
+            pointer-events: none; 
+            text-align: center;
         }
 
         #main-gif {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             object-fit: contain;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             border-radius: 20px;
         }
 
         h1 { 
-            font-size: clamp(1.5rem, 6vw, 2.5rem); 
+            font-size: clamp(1.4rem, 5vw, 2.2rem); 
             color: #ff4d6d; 
-            margin-bottom: 40px;
-            text-align: center;
+            min-height: 80px; /* Reserves space so text doesn't jump */
             padding: 0 20px;
-            background: rgba(255, 240, 243, 0.9);
-            border-radius: 10px;
+            text-shadow: 1px 1px 0px #fff; /* Makes text pop */
         }
 
         .btn-container { 
@@ -52,7 +52,9 @@
             justify-content: center; 
             align-items: center;
             width: 100%;
+            margin-top: 60px; /* MOVED BUTTONS DOWN to prevent overlap */
             position: relative;
+            z-index: 10;
         }
 
         button {
@@ -71,22 +73,20 @@
             background-color: #43aa8b; 
             color: white; 
             transition: transform 0.3s; 
-            z-index: 50; /* High z-index */
         }
 
         #noBtn { 
             background-color: #ff4d6d; 
             color: white; 
             transition: all 0.3s ease-out; 
-            z-index: 1000; /* HIGHEST z-index so it's always on top */
+            z-index: 3000; /* Highest possible to ensure it's never buried */
         }
-
     </style>
 </head>
 <body>
 
-    <audio id="sadSong" src="sad-song.mp3" loop></audio>
-    <audio id="happySong" src="happy-song.mp3" loop></audio>
+    <audio id="sadSong" src="sad-song.mp3" loop preload="auto"></audio>
+    <audio id="happySong" src="happy-song.mp3" loop preload="auto"></audio>
 
     <div class="content-wrapper">
         <img id="main-gif" src="neutral.gif" alt="Character">
@@ -114,12 +114,12 @@
             "Please?(T - T)", 
             "I'll change...I will be better...", 
             "I'll never do or say anything that hurts you!", 
-            "Please give me one chance?! I don't want to loose you!"
+            "Please give me one chance?! I don't want to lose you!"
         ];
 
         function startMusic() {
             if (!musicStarted) {
-                sadSong.play().catch(e => console.log("Audio play deferred"));
+                sadSong.play().catch(() => {});
                 musicStarted = true;
             }
         }
@@ -129,7 +129,6 @@
             if (noCount < sadGifs.length) {
                 mainGif.src = sadGifs[noCount];
             }
-
             noCount++;
 
             if (noCount >= 5) {
@@ -139,16 +138,19 @@
                 noBtn.style.position = 'fixed';
                 heading.innerText = messages[noCount] || "Please? 🥺";
 
-                yesBtn.style.transform = `scale(${1 + noCount * 0.6})`;
-                noBtn.style.transform = `scale(${1 - noCount * 0.15})`;
+                // Scaling Yes Btn
+                yesBtn.style.transform = `scale(${1 + noCount * 0.55})`;
+                // Shrinking No Btn
+                noBtn.style.transform = `scale(${1 - noCount * 0.12})`;
 
                 moveNoButton();
             }
         }
 
         function moveNoButton() {
+            // Keep No button away from the top area where the text/gif is
             const x = Math.random() * (window.innerWidth - 120) + 60;
-            const y = Math.random() * (window.innerHeight - 100) + 50;
+            const y = Math.random() * (window.innerHeight - 250) + 200; 
             
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
@@ -160,15 +162,23 @@
         });
 
         yesBtn.addEventListener('click', () => {
-            // Switch Music
+            // Forcefully swap audio
             sadSong.pause();
-            happySong.play();
+            sadSong.currentTime = 0;
+            
+            // Interaction happened, so happySong should play now
+            const playPromise = happySong.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Playback failed, but button was clicked.");
+                });
+            }
 
             document.body.innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding: 20px;">
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding: 20px; background-color: #fff0f3;">
                     <img src="happy.gif" style="width:250px; border-radius:20px;">
-                    <h1 style="font-size: 2.2rem; margin-top: 20px; color: #ff4d6d;">Thank you so much! you are the best!🌹</h1>
-                    <h2 style="font-size: 1.3rem; color: #555; margin-top: 10px; font-weight: normal;">
+                    <h1 style="font-size: 2rem; margin-top: 20px; color: #ff4d6d; min-height: auto;">Thank you so much! you are the best!🌹</h1>
+                    <h2 style="font-size: 1.2rem; color: #555; margin-top: 10px; font-weight: normal;">
                         I promise I'll make it up to you
                     </h2>
                 </div>
