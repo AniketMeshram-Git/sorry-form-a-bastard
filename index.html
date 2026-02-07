@@ -95,7 +95,7 @@
 
         // Ensure these match your GitHub filenames exactly (case sensitive!)
         const sadGifs = ["sad1.gif", "sad2.gif", "sad3.gif", "sad4.gif"];
-        const messages = ["I AM SORRY", "Please?(T - T)", "Don't be like that...", "I'll be good!", "Please give me one Last chance?!"];
+        const messages = ["I AM SORRY", "Please?(T - T)", "I'll change...I will be better...", "I'll never do anything to hurt you!", "Please give me one chance?! I don't wnat to loose you!"];
 
         function handleNo() {
             if (noCount < sadGifs.length) {
@@ -106,7 +106,7 @@
 
             if (noCount >= 5) {
                 noBtn.style.display = 'none';
-                heading.innerText = "Please say yes... 😭";
+                heading.innerText = "Please say yes...agar tum bhi nahi samjhogi toh aur kon hi hai phir..";
             } else {
                 noBtn.style.position = 'fixed';
                 heading.innerText = messages[noCount] || "Please? 🥺";
