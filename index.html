@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>I'm Sorry ❤️</title>
+    <title>For You ❤️</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
 
@@ -14,25 +14,27 @@
             flex-direction: column;
             align-items: center; 
             justify-content: center; 
-            background: #fff0f3;
+            background-color: #fff0f3;
             font-family: 'Arial', sans-serif; 
             overflow: hidden; 
         }
 
-        #rabbit-img {
-            width: 160px;
-            height: auto;
+        /* The Main Character GIF */
+        #main-gif {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
             margin-bottom: 20px;
-            transition: all 0.3s ease;
+            border-radius: 20px;
             z-index: 10;
         }
 
         h1 { 
-            font-size: clamp(2rem, 10vw, 3.5rem); 
+            font-size: clamp(2rem, 8vw, 3.5rem); 
             color: #ff4d6d; 
             margin-bottom: 30px;
             text-align: center;
-            padding: 0 10px;
+            padding: 0 15px;
             z-index: 10;
         }
 
@@ -42,61 +44,29 @@
             justify-content: center; 
             align-items: center;
             width: 100%;
+            z-index: 20;
         }
 
         button {
-            padding: 15px 30px;
+            padding: 15px 35px;
             border-radius: 50px;
             border: none;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             -webkit-tap-highlight-color: transparent;
         }
 
-        #yesBtn { 
-            background-color: #43aa8b; 
-            color: white; 
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        #yesBtn { background-color: #43aa8b; color: white; transition: transform 0.3s; }
+        #noBtn { background-color: #ff4d6d; color: white; transition: all 0.3s ease-out; }
 
-        #noBtn { 
-            background-color: #ff4d6d; 
-            color: white; 
-            position: relative;
-            z-index: 99;
-            transition: all 0.3s ease-out;
-        }
-
-        /* GIF Overlay Style */
-        #gif-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 250px;
-            height: auto;
-            z-index: 200;
-            display: none;
-            pointer-events: none; /* Allows clicking through the GIF */
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        @keyframes dance {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        .dancing { animation: dance 0.5s infinite; }
     </style>
 </head>
 <body>
 
-    <img id="gif-overlay" src="" alt="Reaction">
+    <img id="main-gif" src="neutral.gif" alt="Character">
 
-    <img src="neutral.svg" id="rabbit-img" alt="Rabbit">
     <h1 id="heading">I AM SORRY</h1>
 
     <div class="btn-container">
@@ -108,72 +78,51 @@
         let noCount = 0;
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const rabbit = document.getElementById('rabbit-img');
-        const gifOverlay = document.getElementById('gif-overlay');
+        const mainGif = document.getElementById('main-gif');
+        const heading = document.getElementById('heading');
 
-        const rabbitStates = {
-            neutral: "neutral.svg",
-            sad: "sad.svg",
-            crying: "crying.svg",
-            happy: "happy.svg"
-        };
+        // GIF list - Make sure these match your filenames on GitHub exactly
+        const sadGifs = ["sad1.gif", "sad2.gif", "sad3.gif", "sad4.gif"];
+        const messages = ["I AM SORRY", "Please? 🥺", "Don't be like that...", "I'll be good!", "Last chance!"];
 
-        // Add your GIF filenames here (Make sure they are in your GitHub repo)
-        const sadGifs = [
-            "sad1.gif",
-            "sad2.gif",
-            "sad3.gif",
-            "sad4.gif"
-        ];
-
-        function showGif() {
-            // Pick a random GIF from your list
-            const randomGif = sadGifs[Math.floor(Math.random() * sadGifs.length)];
-            gifOverlay.src = randomGif;
-            gifOverlay.style.display = "block";
-
-            // Hide the GIF after 1.5 seconds
-            setTimeout(() => {
-                gifOverlay.style.display = "none";
-            }, 1500);
-        }
-
-        function handleNoInteraction(e) {
-            e.preventDefault();
+        function handleNo() {
             noCount++;
             
-            showGif(); // Trigger the GIF
+            // Change GIF to a random sad one
+            const randomGif = sadGifs[Math.floor(Math.random() * sadGifs.length)];
+            mainGif.src = randomGif;
 
-            if (noCount >= 4) {
+            if (noCount >= 5) {
                 noBtn.style.display = 'none';
-                rabbit.src = rabbitStates.crying;
+                heading.innerText = "Please say yes... 😭";
             } else {
                 noBtn.style.position = 'fixed';
                 
-                if (noCount === 1) rabbit.src = rabbitStates.sad;
-                if (noCount === 3) rabbit.src = rabbitStates.crying;
+                // Update Heading text
+                heading.innerText = messages[noCount];
 
-                const yesScale = 1 + (noCount * 0.5);
-                const noScale = 1 - (noCount * 0.1);
-                yesBtn.style.transform = `scale(${yesScale})`;
-                noBtn.style.transform = `scale(${noScale})`;
+                // Scale Logic (Yes grows, No shrinks)
+                yesBtn.style.transform = `scale(${1 + noCount * 0.7})`;
+                noBtn.style.transform = `scale(${1 - noCount * 0.12})`;
 
-                const padding = 80;
-                const x = Math.random() * (window.innerWidth - padding * 2) + padding;
-                const y = Math.random() * (window.innerHeight - padding * 2) + padding;
-
+                // Move No Button to random spot
+                const x = Math.random() * (window.innerWidth - 150) + 75;
+                const y = Math.random() * (window.innerHeight - 150) + 75;
                 noBtn.style.left = x + 'px';
                 noBtn.style.top = y + 'px';
             }
         }
 
-        noBtn.addEventListener('click', handleNoInteraction);
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleNo();
+        });
 
         yesBtn.addEventListener('click', () => {
             document.body.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center;">
-                    <img src="${rabbitStates.happy}" style="width:200px" class="dancing">
-                    <h1 style="font-size: 2.5rem; margin-top: 20px; color: #ff4d6d;">I love you! ❤️</h1>
+                    <img src="happy.gif" style="width:300px; border-radius:20px;">
+                    <h1 style="font-size: 2.5rem; margin-top: 20px; color: #ff4d6d;">Thank you So much! You are the best!❤️</h1>
                 </div>
             `;
         });
