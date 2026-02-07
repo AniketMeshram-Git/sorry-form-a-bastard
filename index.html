@@ -19,14 +19,13 @@
             overflow: hidden; 
         }
 
-        /* Wrap GIF and Text to keep them ON TOP of buttons */
         .content-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            z-index: 100; /* Higher than buttons */
-            pointer-events: none; /* Allows clicking buttons through empty space */
+            z-index: 5; /* Lower than the buttons */
+            pointer-events: none;
         }
 
         #main-gif {
@@ -38,12 +37,12 @@
         }
 
         h1 { 
-            font-size: clamp(1.8rem, 7vw, 3rem); 
+            font-size: clamp(1.5rem, 6vw, 2.5rem); 
             color: #ff4d6d; 
             margin-bottom: 40px;
             text-align: center;
             padding: 0 20px;
-            background: rgba(255, 240, 243, 0.8); /* Optional: faint bg to keep text legible */
+            background: rgba(255, 240, 243, 0.9);
             border-radius: 10px;
         }
 
@@ -54,7 +53,6 @@
             align-items: center;
             width: 100%;
             position: relative;
-            z-index: 10; /* Lower than text */
         }
 
         button {
@@ -66,15 +64,29 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             -webkit-tap-highlight-color: transparent;
-            pointer-events: auto; /* Ensures buttons remain clickable */
+            pointer-events: auto;
         }
 
-        #yesBtn { background-color: #43aa8b; color: white; transition: transform 0.3s; }
-        #noBtn { background-color: #ff4d6d; color: white; transition: all 0.3s ease-out; }
+        #yesBtn { 
+            background-color: #43aa8b; 
+            color: white; 
+            transition: transform 0.3s; 
+            z-index: 50; /* High z-index */
+        }
+
+        #noBtn { 
+            background-color: #ff4d6d; 
+            color: white; 
+            transition: all 0.3s ease-out; 
+            z-index: 1000; /* HIGHEST z-index so it's always on top */
+        }
 
     </style>
 </head>
 <body>
+
+    <audio id="sadSong" src="sad-song.mp3" loop></audio>
+    <audio id="happySong" src="happy-song.mp3" loop></audio>
 
     <div class="content-wrapper">
         <img id="main-gif" src="neutral.gif" alt="Character">
@@ -88,16 +100,32 @@
 
     <script>
         let noCount = 0;
+        let musicStarted = false;
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const mainGif = document.getElementById('main-gif');
         const heading = document.getElementById('heading');
+        const sadSong = document.getElementById('sadSong');
+        const happySong = document.getElementById('happySong');
 
-        // Ensure these match your GitHub filenames exactly (case sensitive!)
         const sadGifs = ["sad1.gif", "sad2.gif", "sad3.gif", "sad4.gif"];
-        const messages = ["I AM SORRY", "Please?(T - T)", "I'll change...I will be better...", "I'll never do or say anything that hurts you!", "Please give me one chance?! I don't want to loose you!"];
+        const messages = [
+            "I AM SORRY", 
+            "Please?(T - T)", 
+            "I'll change...I will be better...", 
+            "I'll never do or say anything that hurts you!", 
+            "Please give me one chance?! I don't want to loose you!"
+        ];
+
+        function startMusic() {
+            if (!musicStarted) {
+                sadSong.play().catch(e => console.log("Audio play deferred"));
+                musicStarted = true;
+            }
+        }
 
         function handleNo() {
+            startMusic();
             if (noCount < sadGifs.length) {
                 mainGif.src = sadGifs[noCount];
             }
@@ -111,7 +139,6 @@
                 noBtn.style.position = 'fixed';
                 heading.innerText = messages[noCount] || "Please? 🥺";
 
-                // Scale Logic (Lowered slightly for mobile safety)
                 yesBtn.style.transform = `scale(${1 + noCount * 0.6})`;
                 noBtn.style.transform = `scale(${1 - noCount * 0.15})`;
 
@@ -120,7 +147,6 @@
         }
 
         function moveNoButton() {
-            // Avoid the middle of the screen where the text and GIF are
             const x = Math.random() * (window.innerWidth - 120) + 60;
             const y = Math.random() * (window.innerHeight - 100) + 50;
             
@@ -134,11 +160,15 @@
         });
 
         yesBtn.addEventListener('click', () => {
+            // Switch Music
+            sadSong.pause();
+            happySong.play();
+
             document.body.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding: 20px;">
                     <img src="happy.gif" style="width:250px; border-radius:20px;">
-                    <h1 style="font-size: 2.5rem; margin-top: 20px; color: #ff4d6d;">Thank you so much! you are the best! ❤️</h1>
-                    <h2 style="font-size: 1.5rem; color: #555; margin-top: 10px; font-weight: normal;">
+                    <h1 style="font-size: 2.2rem; margin-top: 20px; color: #ff4d6d;">Thank you so much! you are the best! ❤️</h1>
+                    <h2 style="font-size: 1.3rem; color: #555; margin-top: 10px; font-weight: normal;">
                         I promise I'll make it up to you
                     </h2>
                 </div>
